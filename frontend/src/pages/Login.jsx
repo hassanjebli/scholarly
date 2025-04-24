@@ -1,9 +1,12 @@
-import React from 'react'
+import React from 'react';
+import StudentLogin from '../components/student/StudentLogin';
 
 const Login = () => {
   return (
-    <div>Login</div>
-  )
-}
+    <>
+      <StudentLogin />
+    </>
+  );
+};
 
-export default Login
+export default Login;

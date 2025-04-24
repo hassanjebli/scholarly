@@ -1,5 +1,6 @@
 import React from 'react';
 import { Outlet, Link } from 'react-router-dom';
+import Logo from '../components/Logo';
 
 const Layout = () => {
   return (
@@ -9,20 +10,7 @@ const Layout = () => {
           <div className="flex justify-between items-center">
             {/* Scholarly Logo with Book */}
             <Link to={'/'}>
-              <div className="flex items-center space-x-2">
-                <svg
-                  className="w-10 h-10 text-blue-800"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M21 4H3a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1zm-1 14H4V6h16v12z"></path>
-                  <path d="M9 8h2v8H9zm4 0h2v8h-2z"></path>
-                  <path d="M4 6v12h16V6H4zm1 11V7h14v10H5z"></path>
-                </svg>
-                <span className="text-xl font-serif font-bold text-gray-800">
-                  Scholarly
-                </span>
-              </div>
+              <Logo />
             </Link>
 
             {/* All Navigation Items Together */}
@@ -32,12 +20,6 @@ const Layout = () => {
                 className="text-gray-700 hover:text-blue-800 transition duration-200"
               >
                 Home
-              </Link>
-              <Link
-                to="/users"
-                className="text-gray-700 hover:text-blue-800 transition duration-200"
-              >
-                Users
               </Link>
               <Link
                 to="/login"
