@@ -38,16 +38,18 @@ const StudentLogin = () => {
   } = form;
 
   const onSubmit = async (values) => {
-    await axiosClient.get('/sanctum/csrf-cookie');
+    await axiosClient.get('/sanctum/csrf-cookie', {
+      baseURL: import.meta.env.VITE_BACKEND_URL,
+    });
     const data = axiosClient
       .post('/login', values)
       .then((value) => {
         if (value.status === 204) {
+          window.localStorage.setItem('ACCESS_TOKEN', 'test');
           navigate(STUDENT_DASHBOARD_ROUTE);
         }
       })
       .catch(({ response }) => {
-        console.log(response.data.errors);
         setError('email', {
           message: response.data.errors.email,
         });
@@ -106,7 +108,7 @@ const StudentLogin = () => {
             type="submit"
             className="mt-4 w-full text-white font-semibold py-2 px-4 rounded-xl transition-all"
           >
-            {isSubmitting && <Loader className='mx-2 my-2 animate-spin' />}
+            {isSubmitting && <Loader className="mx-2 my-2 animate-spin" />}
             Submit
           </Button>
         </form>
