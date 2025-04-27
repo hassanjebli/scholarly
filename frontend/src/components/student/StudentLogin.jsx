@@ -13,6 +13,9 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { axiosClient } from '../../api/axios';
+import { useNavigate } from 'react-router-dom';
+import { STUDENT_DASHBOARD_ROUTE } from '../../router';
+import { Loader } from 'lucide-react';
 
 const formSchema = z.object({
   email: z.string().min(2).max(30).email(),
@@ -20,6 +23,7 @@ const formSchema = z.object({
 });
 
 const StudentLogin = () => {
+  const navigate = useNavigate();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -28,42 +32,86 @@ const StudentLogin = () => {
     },
   });
 
+  const {
+    setError,
+    formState: { isSubmitting },
+  } = form;
+
   const onSubmit = async (values) => {
-    const data = await axiosClient.post('/login', values);
-    console.log(values, data);
+    await axiosClient.get('/sanctum/csrf-cookie');
+    const data = axiosClient
+      .post('/login', values)
+      .then((value) => {
+        if (value.status === 204) {
+          navigate(STUDENT_DASHBOARD_ROUTE);
+        }
+      })
+      .catch(({ response }) => {
+        console.log(response.data.errors);
+        setError('email', {
+          message: response.data.errors.email,
+        });
+      });
   };
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder="Your email" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input type="password" placeholder="Your password" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit">Submit</Button>
-      </form>
-    </Form>
+    <div className="flex items-center justify-center">
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col gap-6 w-full max-w-md bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg"
+        >
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-gray-700 dark:text-gray-300">
+                  Email
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Your email"
+                    {...field}
+                    className="w-full"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-gray-700 dark:text-gray-300">
+                  Password
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="password"
+                    placeholder="Your password"
+                    {...field}
+                    className="w-full"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button
+            disabled={isSubmitting}
+            type="submit"
+            className="mt-4 w-full text-white font-semibold py-2 px-4 rounded-xl transition-all"
+          >
+            {isSubmitting && <Loader className='mx-2 my-2 animate-spin' />}
+            Submit
+          </Button>
+        </form>
+      </Form>
+    </div>
   );
 };
 
